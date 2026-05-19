@@ -72,16 +72,21 @@ func tambahPeserta() {
 	var i int
 	var p Peserta
 	var ditemukan bool
-	var hasilHp, hasilEmail, hasilNama, cekstatus, hasilMinat, hasilUmur, hasilTanggal, hasilTanggalHari, hasilTanggalBulan, hasilTanggalTahun string
+	var hasilHp, hasilEmail, hasilNama, cekstatus, hasilMinat, hasilUmur, hasilTanggal, hasilTanggalHari, hasilTanggalBulan, hasilTanggalTahun, hasilId string
 
 	fmt.Println("\n----- TAMBAH PESERTA -----")
 	fmt.Println("Peringatan!!! ID harus berupa digit!!!")
 	fmt.Print("Masukkan ID : ")
 	fmt.Scan(&p.ID)
-	for p.ID <= 0 {
-		fmt.Println("ID harus berupa digit positif! Masukkan kembali")
-		fmt.Print("Masukkan ID : ")
-		fmt.Scan(&p.ID)
+	hasilId = "tidak_valid"
+	for hasilId == "tidak_valid" {
+		if cekId(p.ID) {
+			hasilId = "valid"
+		} else {
+			fmt.Println("ID harus berupa digit positif dan antara 1 dan 100! Masukkan kembali")
+			fmt.Print("Masukkan ID : ")
+			fmt.Scan(&p.ID)
+		}
 	}
 
 	for i = 0; i < jumlahPeserta; i++ {
@@ -226,6 +231,13 @@ func tambahPeserta() {
 	daftarPeserta[jumlahPeserta] = p
 	jumlahPeserta++
 	fmt.Println("\nPeserta berhasil ditambahkan!")
+}
+
+func cekId(id int) bool {
+	if id > 0 && id <= 100 {
+		return true
+	}
+	return false
 }
 
 func cekTanggal(hari, bulan, tahun int) bool {
