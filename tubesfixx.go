@@ -69,35 +69,28 @@ func main() {
 
 func tambahPeserta() {
 	clearScreen()
-	var i int
+	var idBaru int
 	var p Peserta
-	var ditemukan bool
-	var hasilHp, hasilEmail, hasilNama, cekstatus, hasilMinat, hasilUmur, hasilTanggal, hasilTanggalHari, hasilTanggalBulan, hasilTanggalTahun, hasilId string
+	var hasilHp, hasilEmail, hasilNama, cekstatus, hasilMinat, hasilUmur, hasilTanggal, hasilTanggalHari, hasilTanggalBulan, hasilTanggalTahun string
 
 	fmt.Println("\n----- TAMBAH PESERTA -----")
-	fmt.Println("Peringatan!!! ID harus berupa digit!!!")
-	fmt.Print("Masukkan ID : ")
-	fmt.Scan(&p.ID)
-	hasilId = "tidak_valid"
-	for hasilId == "tidak_valid" {
-		if cekId(p.ID) {
-			hasilId = "valid"
-		} else {
-			fmt.Println("ID harus berupa digit positif dan antara 1 dan 100! Masukkan kembali")
-			fmt.Print("Masukkan ID : ")
-			fmt.Scan(&p.ID)
-		}
-	}
-
-	for i = 0; i < jumlahPeserta; i++ {
-		if daftarPeserta[i].ID == p.ID {
-			ditemukan = true
-		}
-	}
-	if ditemukan {
-		fmt.Println("ID sudah digunakan!")
+	if jumlahPeserta >= maxPeserta {
+		fmt.Println("Data peserta sudah penuh!")
 		return
 	}
+	if jumlahPeserta >= maxPeserta {
+		fmt.Println("Daftar peserta sudah penuh! Tidak bisa menambahkan peserta baru.")
+		return
+	}
+ 
+	idBaru = generateID()
+
+	if idBaru == -1 {
+		fmt.Println("Tidak ada ID yang tersedia! Kapasitas penuh (1-100).")
+		return
+	}
+ 
+	p.ID = idBaru
 
 	fmt.Print("Masukkan Nama : ")
 	fmt.Scan(&p.Nama)
@@ -116,10 +109,10 @@ func tambahPeserta() {
 	for hasilUmur == "tidak_valid" {
 		fmt.Print("Masukkan Umur : ")
 		fmt.Scan(&p.Umur)
-		if p.Umur >= 7  {
+		if p.Umur >= 7 && p.Umur <= 150 {
 			hasilUmur = "valid"
 		} else {
-			fmt.Println("Umur harus lebih dari 7!")
+			fmt.Println("Umur harus lebih dari 7 atau umur tidak masuk akal!")
 		}
 	}
 
@@ -165,39 +158,33 @@ func tambahPeserta() {
 	for hasilTanggal == "tidak_valid" {
 		fmt.Println("Format Tanggal: DD-MM-YYYY")
 		hasilTanggalHari = "tidak_valid"
-		fmt.Print("Masukkan Tanggal Daftar Hari : ")
-		fmt.Scan(&inputTanggal.Hari)
 		for hasilTanggalHari == "tidak_valid" {
+			fmt.Print("Masukkan Tanggal Daftar Hari : ")
+			fmt.Scan(&inputTanggal.Hari)
 			if inputTanggal.Hari >= 1 && inputTanggal.Hari <= 31 {
 				hasilTanggalHari = "valid"
 			} else if inputTanggal.Hari < 1 || inputTanggal.Hari > 31 {
 				fmt.Println("Hari harus antara 1 dan 31!")
-				fmt.Print("Masukkan Tanggal Daftar Hari : ")
-				fmt.Scan(&inputTanggal.Hari)
 			}
 		}
-		fmt.Print("Masukkan Tanggal Daftar Bulan : ")
-		fmt.Scan(&inputTanggal.Bulan)
 		hasilTanggalBulan = "tidak_valid"
 		for hasilTanggalBulan == "tidak_valid" {
+			fmt.Print("Masukkan Tanggal Daftar Bulan : ")
+			fmt.Scan(&inputTanggal.Bulan)
 			if inputTanggal.Bulan >= 1 && inputTanggal.Bulan <= 12 {
 				hasilTanggalBulan = "valid"
 			} else if inputTanggal.Bulan < 1 || inputTanggal.Bulan > 12 {
 				fmt.Println("Bulan harus antara 1 dan 12!")
-				fmt.Print("Masukkan Tanggal Daftar Bulan : ")
-				fmt.Scan(&inputTanggal.Bulan)
 			}
 		}
-		fmt.Print("Masukkan Tanggal Daftar Tahun : ")
-		fmt.Scan(&inputTanggal.Tahun)
 		hasilTanggalTahun = "tidak_valid"
 		for hasilTanggalTahun == "tidak_valid" {
+			fmt.Print("Masukkan Tanggal Daftar Tahun : ")
+			fmt.Scan(&inputTanggal.Tahun)
 			if inputTanggal.Tahun >= 2020 && inputTanggal.Tahun <= 2026 {
 				hasilTanggalTahun = "valid"
 			} else if inputTanggal.Tahun < 2020 || inputTanggal.Tahun > 2026 {
 				fmt.Println("Tahun harus antara 2020 dan 2026!")
-				fmt.Print("Masukkan Tanggal Daftar Tahun : ")
-				fmt.Scan(&inputTanggal.Tahun)
 			}
 		}
 		if cekTanggal(inputTanggal.Hari, inputTanggal.Bulan, inputTanggal.Tahun) {
@@ -211,7 +198,6 @@ func tambahPeserta() {
 			}
 		}
 	}
-
 	var status int
 	fmt.Print("Status Aktif? (1=Ya / 0=Tidak): ")
 	cekstatus = "salah"
@@ -233,11 +219,24 @@ func tambahPeserta() {
 	fmt.Println("\nPeserta berhasil ditambahkan!")
 }
 
-func cekId(id int) bool {
-	if id > 0 && id <= 100 {
-		return true
-	}
-	return false
+func generateID() int {
+    var i, j int
+    var idDipakai bool
+    var idHasil int
+    idHasil = -1
+    for i = 1; i <= maxPeserta; i++ {
+        idDipakai = false
+        for j = 0; j < jumlahPeserta; j++ {
+            if daftarPeserta[j].ID == i {
+                idDipakai = true
+            }
+        }
+        if !idDipakai {
+            idHasil = i
+            i = maxPeserta + 1
+        }
+    }
+    return idHasil
 }
 
 func cekTanggal(hari, bulan, tahun int) bool {
@@ -294,22 +293,38 @@ func cekNomorHP(noHP string) string {
 }
 
 func cekEmail(email string) bool {
-	var cekAt, cekDot bool
-	var i int
-	cekAt = false
-	cekDot = false
+	var i, posAt, posTitik, jumlahAt int
+	posAt    = -1
+	posTitik = -1
+	jumlahAt = 0
+	if len(email) == 0 {
+		return false
+	}
 	for i = 0; i < len(email); i++ {
 		if email[i] == '@' {
-			cekAt = true
+			jumlahAt++
+			posAt = i
 		}
-		if email[i] == '.' {
-			cekDot = true
+		if email[i] == '.' && posAt != -1 {
+			posTitik = i
 		}
 	}
-	if cekAt && cekDot {
-		return true
+	if jumlahAt != 1 {
+		return false
 	}
-	return false
+	if posTitik == -1 {
+		return false
+	}
+	if posAt == 0 {
+		return false
+	}
+	if posTitik == posAt+1 {
+		return false
+	}
+	if posTitik == len(email)-1 {
+		return false
+	}
+	return true
 }
 
 func cekNama(nama string) bool {
@@ -333,7 +348,7 @@ func tampilPeserta() {
 		return
 	}
 	fmt.Println("------------------------------------------------------------------------------------------------------------------------------------------")
-	fmt.Printf("%-4s%-20s%-5s%-20s%-20s%-20s%-20s%-20s%-20s\n", "ID", "Nama", "Umur", "Email", "HP", "Minat", "Kursus", "Tanggal", "Status")
+	fmt.Printf("%-4s%-20s%-5s%-30s%-20s%-20s%-20s%-20s%-20s\n", "ID", "Nama", "Umur", "Email", "HP", "Minat", "Kursus", "Tanggal", "Status")
 	fmt.Println("------------------------------------------------------------------------------------------------------------------------------------------")
 
 	for i = 0; i < jumlahPeserta; i++ {
@@ -343,10 +358,7 @@ func tampilPeserta() {
 		} else {
 			status = "Tidak"
 		}
-		fmt.Printf("%-4d%-20s%-5d%-20s%-20s%-20s%-20s%-20s%-20s\n",
-			daftarPeserta[i].ID, daftarPeserta[i].Nama, daftarPeserta[i].Umur,
-			daftarPeserta[i].Email, daftarPeserta[i].NoHP, daftarPeserta[i].BidangMinat,
-			daftarPeserta[i].KatalogKursus, daftarPeserta[i].TanggalDaftar, status)
+		fmt.Printf("%-4d%-20s%-5d%-30s%-20s%-20s%-20s%-20s%-20s\n", daftarPeserta[i].ID, daftarPeserta[i].Nama, daftarPeserta[i].Umur, daftarPeserta[i].Email, daftarPeserta[i].NoHP, daftarPeserta[i].BidangMinat, daftarPeserta[i].KatalogKursus, daftarPeserta[i].TanggalDaftar, status)
 	}
 }
 
@@ -379,10 +391,10 @@ func ubahPeserta() {
 	fmt.Scan(&daftarPeserta[index].Umur)
 	hasilUmur = "tidak_valid"
 	for hasilUmur == "tidak_valid" {
-		if daftarPeserta[index].Umur > 7 {
+		if daftarPeserta[index].Umur > 7 && daftarPeserta[index].Umur <= 150 {
 			hasilUmur = "valid"
 		}
-		fmt.Println("Umur harus lebih dari 7!")
+		fmt.Println("Umur harus lebih dari 7 atau umur tidak masuk akal!")
 		fmt.Print("Masukkan Umur : ")
 		fmt.Scan(&daftarPeserta[index].Umur)
 	}
@@ -447,11 +459,15 @@ func hapusPeserta() {
 		fmt.Println("Data tidak ditemukan!!!")
 		return
 	}
+	fmt.Println("Data yang akan dihapus:")
+	fmt.Println("ID : ", daftarPeserta[index].ID)
+	fmt.Println("Nama : ", daftarPeserta[index].Nama)
+	fmt.Println("Kursus : ", daftarPeserta[index].KatalogKursus)
 	for i = index; i < jumlahPeserta-1; i++ {
 		daftarPeserta[i] = daftarPeserta[i+1]
 	}
 	jumlahPeserta--
-	fmt.Println("Data berhasil dihapus!")
+	fmt.Printf("Data dengan ID %d berhasil dihapus!\n", id)
 }
 
 func menuPencarian() {
