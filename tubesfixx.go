@@ -461,6 +461,10 @@ func hapusPeserta() {
 	}
 	fmt.Println("Data yang akan dihapus:")
 	fmt.Println("ID : ", daftarPeserta[index].ID)
+	fmt.Println("Umur : ", daftarPeserta[index].Umur)
+	fmt.Println("Email : ", daftarPeserta[index].Email)
+	fmt.Println("No HP : ", daftarPeserta[index].NoHP)
+	fmt.Println("Bidang Minat : ", daftarPeserta[index].BidangMinat)
 	fmt.Println("Nama : ", daftarPeserta[index].Nama)
 	fmt.Println("Kursus : ", daftarPeserta[index].KatalogKursus)
 	for i = index; i < jumlahPeserta-1; i++ {
