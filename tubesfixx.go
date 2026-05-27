@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"bufio"
 )
 
 const maxPeserta = 100
@@ -16,33 +17,45 @@ type Tanggal struct {
 
 type Peserta struct {
 	ID, Umur int
-	Nama, Email, NoHP, BidangMinat, KatalogKursus, TanggalDaftar string
+	Nama, Email, NoHP, BidangMinat, Kursus, TanggalDaftar string
 	StatusAktif bool
 }
 
 var daftarPeserta [maxPeserta] Peserta
 var jumlahPeserta int = 0
 var inputTanggal Tanggal
+var reader *bufio.Reader
+var inputString string
+var valid bool
 
 func main() {
 	clearScreen()
+	isiDataDummy()
+	reader = bufio.NewReader(os.Stdin)
 	var pilihan int
 	var menu bool
 	menu = true
 	for menu == true {
-		fmt.Println("\n------------------------------------")
-		fmt.Println(" SISTEM PENDAFTARAN KURSUSIN ")
-		fmt.Println("------------------------------------")
-		fmt.Println("1. Tambah Peserta")
-		fmt.Println("2. Tampilkan Peserta")
-		fmt.Println("3. Ubah Peserta")
-		fmt.Println("4. Hapus Peserta")
-		fmt.Println("5. Cari Peserta")
-		fmt.Println("6. Urutkan Peserta")
-		fmt.Println("7. Statistik Peserta")
-		fmt.Println("8. Keluar")
-		fmt.Print("Pilih menu: ")
-		fmt.Scan(&pilihan)
+		fmt.Println()
+		fmt.Println("  ╔══════════════════════════════════════════╗")
+		fmt.Println("  ║                                          ║")
+		fmt.Println("  ║                 KURSUSIN                 ║")
+		fmt.Println("  ║                                          ║")
+		fmt.Println("  ╠══════════════════════════════════════════╣")
+		fmt.Println("  ║                                          ║")
+		fmt.Println("  ║   [1]  Tambah Peserta                    ║")
+		fmt.Println("  ║   [2]  Tampilkan Peserta                 ║")
+		fmt.Println("  ║   [3]  Ubah Peserta                      ║")
+		fmt.Println("  ║   [4]  Hapus Peserta                     ║")
+		fmt.Println("  ║   [5]  Cari Peserta                      ║")
+		fmt.Println("  ║   [6]  Urutkan Peserta                   ║")
+		fmt.Println("  ║   [7]  Statistik Peserta                 ║")
+		fmt.Println("  ║   [8]  Keluar                            ║")
+		fmt.Println("  ║                                          ║")
+		fmt.Println("  ╚══════════════════════════════════════════╝")
+		fmt.Print("  Pilih menu : ")
+		inputString = bacaString()
+		pilihan, valid = stringKeInt(inputString)
 		switch pilihan {
 		case 1:
 			tambahPeserta()
@@ -59,9 +72,14 @@ func main() {
 		case 7:
 			statistikPeserta()
 		case 8:
-			fmt.Println("Program selesai.")
+			clearScreen()
+			fmt.Println()
+			fmt.Println("  ╔══════════════════════════════════════════╗")
+			fmt.Println("  ║         !!!  PROGRAM SELESAI  !!!        ║")
+			fmt.Println("  ╚══════════════════════════════════════════╝")
 			menu = false
 		default:
+			clearScreen()
 			fmt.Println("Menu tidak tersedia.")
 		}
 	}
@@ -71,18 +89,12 @@ func tambahPeserta() {
 	clearScreen()
 	var idBaru int
 	var p Peserta
-	var hasilHp, hasilEmail, hasilNama, cekstatus, hasilMinat, hasilUmur, hasilTanggal, hasilTanggalHari, hasilTanggalBulan, hasilTanggalTahun string
+	var hasilKursus, hasilHp, hasilEmail, hasilNama, cekstatus, hasilMinat, hasilUmur, hasilTanggal, hasilTanggalHari, hasilTanggalBulan, hasilTanggalTahun string
 
-	fmt.Println("\n----- TAMBAH PESERTA -----")
 	if jumlahPeserta >= maxPeserta {
 		fmt.Println("Data peserta sudah penuh!")
 		return
 	}
-	if jumlahPeserta >= maxPeserta {
-		fmt.Println("Daftar peserta sudah penuh! Tidak bisa menambahkan peserta baru.")
-		return
-	}
- 
 	idBaru = generateID()
 
 	if idBaru == -1 {
@@ -92,99 +104,118 @@ func tambahPeserta() {
  
 	p.ID = idBaru
 
-	fmt.Print("Masukkan Nama : ")
-	fmt.Scan(&p.Nama)
+	fmt.Println()
+	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  │            TAMBAH PESERTA                │")
+	fmt.Println("  ├──────────────────────────────────────────┤")
+	fmt.Printf("  │  ID Peserta    : %-24d│\n", idBaru)
+	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Println()
+
 	hasilNama = "tidak_valid"
 	for hasilNama == "tidak_valid" {
-		if cekNama(p.Nama) {
+		fmt.Print("  Masukkan Nama : ")
+		p.Nama = bacaString()
+		if cekString(p.Nama) {
 			hasilNama = "valid"
 		} else {
-			fmt.Println("Nama tidak valid!")
-			fmt.Print("Masukkan Nama : ")
-			fmt.Scan(&p.Nama)
+			fmt.Println("  Nama Harus Dimulai Dengan Huruf Kapital!")
 		}
 	}
 
 	hasilUmur = "tidak_valid"
 	for hasilUmur == "tidak_valid" {
-		fmt.Print("Masukkan Umur : ")
-		fmt.Scan(&p.Umur)
-		if p.Umur >= 7 && p.Umur <= 150 {
+		valid = false
+		fmt.Print("  Masukkan Umur : ")
+		inputString = bacaString()
+		p.Umur, valid = stringKeInt(inputString)
+		if !valid {
+			fmt.Println("  Input umur tidak valid! Masukkan angka.")
+		} else if p.Umur >= 7 && p.Umur <= 150 {
 			hasilUmur = "valid"
 		} else {
-			fmt.Println("Umur harus lebih dari 7 atau umur tidak masuk akal!")
+			fmt.Println("  Umur harus lebih dari 7 atau umur tidak masuk akal!")
 		}
 	}
 
-	fmt.Print("Masukkan Email : ")
-	fmt.Scan(&p.Email)
 	hasilEmail = "tidak_valid"
 	for hasilEmail == "tidak_valid" {
+		fmt.Print("  Masukkan Email : ")
+		p.Email = bacaString()
 		if cekEmail(p.Email) {
 			hasilEmail = "valid"
 		} else {
-			fmt.Println("Email tidak valid!")
-			fmt.Print("Masukkan Email : ")
-			fmt.Scan(&p.Email)
+			fmt.Println("  Email tidak valid!")
 		}
 	}
 
-	fmt.Print("Masukkan No HP : ")
 	hasilHp = "tidak_valid"
 	for hasilHp == "tidak_valid" {
-		fmt.Scan(&p.NoHP)
-		hasilHp = cekNomorHP(p.NoHP)
-		if hasilHp == "tidak_valid" {
-			fmt.Println("Nomor HP tidak valid! Contoh: 0812xxxx / +62812xxxx")
-			fmt.Print("Masukkan No HP : ")
+		fmt.Print("  Masukkan No HP : ")
+		p.NoHP = bacaString()
+		if cekNomorHP(p.NoHP) {
+			hasilHp = "valid"
+		} else {
+			fmt.Println("  Nomor HP tidak valid! Contoh: 081234567890 / +6281234567890")
 		}
 	}
 
 	hasilMinat = "salah"
 	for hasilMinat == "salah" {
-		fmt.Print("Pilihan: Seni / Sains / Olahraga / Prakarya / Sosial\nMasukkan Bidang Minat : ")
-		fmt.Scan(&p.BidangMinat)
+		fmt.Print("  Pilihan: Seni / Sains / Olahraga / Prakarya / Sosial\n  Masukkan Bidang Minat : ")
+		p.BidangMinat = bacaString()
 		if p.BidangMinat == "Seni" || p.BidangMinat == "Sains" || p.BidangMinat == "Olahraga" || p.BidangMinat == "Prakarya" || p.BidangMinat == "Sosial" {
 			hasilMinat = "benar"
 		} else {
-			fmt.Println("Bidang minat tidak valid!")
+			fmt.Println("  Bidang minat tidak valid!")
 		}
 	}
 
-	fmt.Print("Masukkan Katalog Kursus : ")
-	fmt.Scan(&p.KatalogKursus)
-	
+	hasilKursus = "tidak_valid"
+	for hasilKursus == "tidak_valid" {
+		fmt.Print("  Masukkan Kursus : ")
+		p.Kursus = bacaString()
+		if cekString(p.Kursus) {
+			hasilKursus = "valid"
+		} else {
+			fmt.Println("  Kursus tidak valid (harus diawali kapital)!")
+		}
+	}
+
 	hasilTanggal = "tidak_valid"
 	for hasilTanggal == "tidak_valid" {
-		fmt.Println("Format Tanggal: DD-MM-YYYY")
+		fmt.Println("  Format Tanggal : DD-MM-YYYY")
 		hasilTanggalHari = "tidak_valid"
 		for hasilTanggalHari == "tidak_valid" {
-			fmt.Print("Masukkan Tanggal Daftar Hari : ")
-			fmt.Scan(&inputTanggal.Hari)
+			fmt.Print("  Masukkan Tanggal Daftar Hari : ")
+			inputString = bacaString()
+			inputTanggal.Hari, valid = stringKeInt(inputString)
 			if inputTanggal.Hari >= 1 && inputTanggal.Hari <= 31 {
 				hasilTanggalHari = "valid"
 			} else if inputTanggal.Hari < 1 || inputTanggal.Hari > 31 {
-				fmt.Println("Hari harus antara 1 dan 31!")
+				fmt.Println("  Hari harus antara 1 dan 31!")
 			}
 		}
 		hasilTanggalBulan = "tidak_valid"
 		for hasilTanggalBulan == "tidak_valid" {
-			fmt.Print("Masukkan Tanggal Daftar Bulan : ")
-			fmt.Scan(&inputTanggal.Bulan)
+			fmt.Print("  Masukkan Tanggal Daftar Bulan : ")
+			inputString = bacaString()
+			inputTanggal.Bulan, valid = stringKeInt(inputString)
 			if inputTanggal.Bulan >= 1 && inputTanggal.Bulan <= 12 {
 				hasilTanggalBulan = "valid"
 			} else if inputTanggal.Bulan < 1 || inputTanggal.Bulan > 12 {
-				fmt.Println("Bulan harus antara 1 dan 12!")
+				fmt.Println("  Bulan harus antara 1 dan 12!")
 			}
 		}
 		hasilTanggalTahun = "tidak_valid"
 		for hasilTanggalTahun == "tidak_valid" {
-			fmt.Print("Masukkan Tanggal Daftar Tahun : ")
-			fmt.Scan(&inputTanggal.Tahun)
+			fmt.Print("  Masukkan Tanggal Daftar Tahun : ")
+			inputString = bacaString()
+			inputTanggal.Tahun, valid = stringKeInt(inputString)
 			if inputTanggal.Tahun >= 2020 && inputTanggal.Tahun <= 2026 {
 				hasilTanggalTahun = "valid"
 			} else if inputTanggal.Tahun < 2020 || inputTanggal.Tahun > 2026 {
-				fmt.Println("Tahun harus antara 2020 dan 2026!")
+				fmt.Println(  "Tahun harus antara 2020 dan 2026!")
 			}
 		}
 		if cekTanggal(inputTanggal.Hari, inputTanggal.Bulan, inputTanggal.Tahun) {
@@ -192,31 +223,96 @@ func tambahPeserta() {
 			hasilTanggal = "valid"
 		} else {
 			if inputTanggal.Tahun < 2020 || inputTanggal.Tahun > 2026 {
-				fmt.Println("Tahun harus antara 2020 dan 2026!")
+				fmt.Println("  Tahun harus antara 2020 dan 2026!")
 			} else {
-				fmt.Println("Tanggal tidak valid! Pastikan format DD-MM-YYYY benar dan tanggalnya valid.")
+				fmt.Println("  Tanggal tidak valid! Pastikan format DD-MM-YYYY benar dan tanggalnya valid.")
 			}
 		}
 	}
 	var status int
-	fmt.Print("Status Aktif? (1=Ya / 0=Tidak): ")
 	cekstatus = "salah"
 	for cekstatus == "salah" {
-		fmt.Scan(&status)
-		if status == 1 {
+		fmt.Print("  Status Aktif? (1=Ya / 0=Tidak): ")
+		inputString = bacaString()
+		status, valid = stringKeInt(inputString)
+		if !valid {
+			fmt.Println("  Input tidak valid! Masukkan angka 1 atau 0.")
+		} else if status == 1 {
 			p.StatusAktif = true
 			cekstatus = "benar"
 		} else if status == 0 {
 			p.StatusAktif = false
 			cekstatus = "benar"
 		} else {
-			fmt.Print("Input salah! Masukkan kembali (1/0): ")
+			fmt.Print("  Input salah! Masukkan kembali (1/0): ")
 		}
 	}
 
 	daftarPeserta[jumlahPeserta] = p
 	jumlahPeserta++
-	fmt.Println("\nPeserta berhasil ditambahkan!")
+	clearScreen()
+	fmt.Println("\n  Peserta berhasil ditambahkan!")
+}
+
+func bacaString() string {
+	var input string
+	var err   error
+	var i     int
+
+	input, err = reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("  Gagal membaca input!")
+		return ""
+	}
+
+	for i = len(input) - 1; i >= 0; i-- {
+		if input[i] == '\n' || input[i] == '\r' || input[i] == ' ' {
+			input = input[:i]
+		} else {
+			break
+		}
+	}
+
+	for len(input) > 0 && input[0] == ' ' {
+		input = input[1:]
+	}
+	return input
+}
+
+func stringKeInt(s string) (int, bool) {
+	var i, hasil int
+	var negatif  bool
+ 
+	if len(s) == 0 {
+		return 0, false
+	}
+ 
+	i       = 0
+	negatif = false
+	hasil   = 0
+ 
+	if s[0] == '-' {
+		negatif = true
+		i       = 1
+	}
+ 
+	if i >= len(s) {
+		return 0, false
+	}
+ 
+	for i < len(s) {
+		if s[i] < '0' || s[i] > '9' {
+			return 0, false
+		}
+		hasil = hasil*10 + int(s[i]-'0')
+		i++
+	}
+ 
+	if negatif {
+		hasil = -hasil
+	}
+ 
+	return hasil, true
 }
 
 func generateID() int {
@@ -274,22 +370,32 @@ func cekTanggal(hari, bulan, tahun int) bool {
 	return false
 }
 
-func cekNomorHP(noHP string) string {
-	var panjang int
+func cekNomorHP(noHP string) bool {
+	var panjang, i int
 	panjang = 0
-	for range noHP {
+	for i = 0; i < len(noHP); i++ {
 		panjang++
 	}
 	if panjang >= 2 && noHP[0:2] == "08" {
 		if panjang == 12 || panjang == 13 {
-			return noHP
+			for i = 0; i < panjang; i++ {
+				if noHP[i] < '0' || noHP[i] > '9' {
+					return false
+				}
+			}
+			return true
 		}
 	} else if panjang >= 3 && noHP[0:3] == "+62" {
 		if panjang == 14 || panjang == 15 {
-			return noHP
+			for i = 1; i < panjang; i++ {
+				if noHP[i] < '0' || noHP[i] > '9' {
+					return false
+				}
+			}
+			return true
 		}
 	}
-	return "tidak_valid"
+	return false
 }
 
 func cekEmail(email string) bool {
@@ -327,29 +433,40 @@ func cekEmail(email string) bool {
 	return true
 }
 
-func cekNama(nama string) bool {
-	var cekDigit bool
+func cekString(nama string) bool {
+	var str bool
 	var i int
-	cekDigit = true
-	for i = 0; i < len(nama); i++ {
-		if nama[i] >= '0' && nama[i] <= '9' {
-			cekDigit = false
+	str = false
+	if len(nama) == 0 {
+		return str
+	}
+	if nama[0] >= 'A' && nama[0] <= 'Z' {
+		for i = 1; i < len(nama); i++ {
+			if nama[i] >= 'a' && nama[i] <= 'z' {
+				str = true
+			}
 		}
 	}
-	return cekDigit
+	return str
 }
 
 func tampilPeserta() {
 	var i int
 	clearScreen()
-	fmt.Println("\n----- DATA PESERTA -----")
+	fmt.Println()
+	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  │             DATA PESERTA                 │")
+	fmt.Println("  └──────────────────────────────────────────┘")
 	if jumlahPeserta == 0 {
-		fmt.Println("Belum ada data peserta.")
+		fmt.Println()
+		fmt.Println("  ┌──────────────────────────────────────────┐")
+		fmt.Println("  │     !!! BELUM ADA DATA PESERTA !!!       │")
+		fmt.Println("  └──────────────────────────────────────────┘")
 		return
 	}
-	fmt.Println("------------------------------------------------------------------------------------------------------------------------------------------")
-	fmt.Printf("%-4s%-20s%-5s%-30s%-20s%-20s%-20s%-20s%-20s\n", "ID", "Nama", "Umur", "Email", "HP", "Minat", "Kursus", "Tanggal", "Status")
-	fmt.Println("------------------------------------------------------------------------------------------------------------------------------------------")
+	fmt.Println("  ┌────┬────────────────────┬──────┬────────────────────────────┬──────────────────┬──────────────┬────────────────────┬────────────┬────────┐")
+	fmt.Printf("  │ %-2s │ %-18s │ %-4s │ %-26s │ %-16s │ %-12s │ %-18s │ %-10s │ %-6s │\n", "ID", "Nama", "Umur", "Email", "No HP", "Minat", "Kursus", "Tanggal", "Status")
+	fmt.Println("  ├────┼────────────────────┼──────┼────────────────────────────┼──────────────────┼──────────────┼────────────────────┼────────────┼────────┤")
 
 	for i = 0; i < jumlahPeserta; i++ {
 		var status string
@@ -358,84 +475,117 @@ func tampilPeserta() {
 		} else {
 			status = "Tidak"
 		}
-		fmt.Printf("%-4d%-20s%-5d%-30s%-20s%-20s%-20s%-20s%-20s\n", daftarPeserta[i].ID, daftarPeserta[i].Nama, daftarPeserta[i].Umur, daftarPeserta[i].Email, daftarPeserta[i].NoHP, daftarPeserta[i].BidangMinat, daftarPeserta[i].KatalogKursus, daftarPeserta[i].TanggalDaftar, status)
+		fmt.Printf("  │ %-2d │ %-18s │ %-4d │ %-26s │ %-16s │ %-12s │ %-18s │ %-10s │ %-6s │\n", daftarPeserta[i].ID, daftarPeserta[i].Nama, daftarPeserta[i].Umur, daftarPeserta[i].Email, daftarPeserta[i].NoHP, daftarPeserta[i].BidangMinat, daftarPeserta[i].Kursus, daftarPeserta[i].TanggalDaftar, status)
 	}
+	fmt.Println("  └────┴────────────────────┴──────┴────────────────────────────┴──────────────────┴──────────────┴────────────────────┴────────────┴────────┘")
+	fmt.Printf("  Total peserta : %d\n", jumlahPeserta)
 }
 
 func ubahPeserta() {
 	clearScreen()
 	var id, index int
-	var hasilEmail, hasilHp, hasilNama, hasilUmur, hasilMinat string
-	fmt.Println("\n----- UBAH PESERTA -----")
-	fmt.Print("Masukkan ID peserta: ")
-	fmt.Scan(&id)
+	var p Peserta
+	var hasilKursus, hasilEmail, hasilHp, hasilNama, hasilUmur, hasilMinat string
+	fmt.Println()
+	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  │             DATA PESERTA                 │")
+	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Print("  Masukkan ID peserta : ")
+	inputString = bacaString()
+	id, valid = stringKeInt(inputString)
+	for !valid {
+		fmt.Println()
+		fmt.Println("  ┌──────────────────────────────────────────┐")
+		fmt.Println("  │       !!! ID HARUS BERUPA ANGKA !!!      │")
+		fmt.Println("  └──────────────────────────────────────────┘")
+		fmt.Print("  Masukkan ID peserta : ")
+		inputString = bacaString()
+		id, valid = stringKeInt(inputString)
+	}
 	index = cariIndexByID(id)
 	if index == -1 {
-		fmt.Println("Peserta tidak ditemukan!")
+		fmt.Println()
+		fmt.Println("  ┌──────────────────────────────────────────┐")
+		fmt.Println("  │     !!! DATA TIDAK DITEMUKAN !!!         │")
+		fmt.Println("  └──────────────────────────────────────────┘")
 		return
 	}
-	fmt.Println("Data ditemukan! Masukkan data baru:")
-	fmt.Print("Nama Baru : ")
-	fmt.Scan(&daftarPeserta[index].Nama)
+	fmt.Println()
+	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  │              DATA DITEMUKAN              │")
+	fmt.Println("  │            MASUKKAN DATA BARU            │")
+	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Print("  Nama Depan Baru : ")
+	daftarPeserta[index].Nama = bacaString()
 	hasilNama = "tidak_valid"
 	for hasilNama == "tidak_valid" {
-		if cekNama(daftarPeserta[index].Nama) {
+		if cekString(daftarPeserta[index].Nama) {
 			hasilNama = "valid"
 		} else {
-			fmt.Println("Nama tidak valid!")
-			fmt.Print("Masukkan Nama : ")
-			fmt.Scan(&daftarPeserta[index].Nama)
+			fmt.Println("  Nama Harus Dimulai Dengan Huruf Kapital!")
+			fmt.Print("  Masukkan Nama Depan : ")
+			daftarPeserta[index].Nama = bacaString()
 		}
 	}
-	fmt.Print("Umur Baru : ")
-	fmt.Scan(&daftarPeserta[index].Umur)
 	hasilUmur = "tidak_valid"
 	for hasilUmur == "tidak_valid" {
-		if daftarPeserta[index].Umur > 7 && daftarPeserta[index].Umur <= 150 {
+		fmt.Print("  Masukkan Umur : ")
+		inputString = bacaString()
+		p.Umur, valid = stringKeInt(inputString)
+		if !valid {
+			fmt.Println("  Input umur tidak valid! Masukkan angka.")
+		} else if p.Umur >= 7 && p.Umur <= 150 {
+			daftarPeserta[index].Umur = p.Umur
 			hasilUmur = "valid"
+		} else {
+			fmt.Println("  Umur harus lebih dari 7 atau umur tidak masuk akal!")
 		}
-		fmt.Println("Umur harus lebih dari 7 atau umur tidak masuk akal!")
-		fmt.Print("Masukkan Umur : ")
-		fmt.Scan(&daftarPeserta[index].Umur)
 	}
-	fmt.Print("Email Baru : ")
-	fmt.Scan(&daftarPeserta[index].Email)
 	hasilEmail = "tidak_valid"
 	for hasilEmail == "tidak_valid" {
+		fmt.Print("  Email Baru : ")
+		daftarPeserta[index].Email = bacaString()
 		if cekEmail(daftarPeserta[index].Email) {
 			hasilEmail = "valid"
 		} else {
-			fmt.Println("Email tidak valid!")
-			fmt.Print("Masukkan Email : ")
-			fmt.Scan(&daftarPeserta[index].Email)
+			fmt.Println("  Email tidak valid!")
 		}
 	}
-	fmt.Print("No HP Baru : ")
-	fmt.Scan(&daftarPeserta[index].NoHP)
 	hasilHp = "tidak_valid"
 	for hasilHp == "tidak_valid" {
-		hasilHp = cekNomorHP(daftarPeserta[index].NoHP)
-		if hasilHp == "tidak_valid" {
-			fmt.Println("Nomor HP tidak valid! Contoh: 0812xxxx / +62812xxxx")
-			fmt.Print("Masukkan No HP : ")
-			fmt.Scan(&daftarPeserta[index].NoHP)
+		fmt.Print("  No HP Baru : ")
+		daftarPeserta[index].NoHP = bacaString()
+		if cekNomorHP(daftarPeserta[index].NoHP) {
+			hasilHp = "valid"
+		} else {
+			fmt.Println("  Nomor HP tidak valid! Contoh: 081234567890 / +6281234567890")
 		}
 	}
-	fmt.Print("Pilihan: Seni / Sains / Olahraga / Prakarya / Sosial\nMasukkan Bidang Minat : ")
-	fmt.Scan(&daftarPeserta[index].BidangMinat)
 	hasilMinat = "tidak_valid"
 	for hasilMinat == "tidak_valid" {
+		fmt.Print("  Pilihan: Seni / Sains / Olahraga / Prakarya / Sosial\n  Masukkan Bidang Minat : ")
+		daftarPeserta[index].BidangMinat = bacaString()
 		if daftarPeserta[index].BidangMinat == "Seni" || daftarPeserta[index].BidangMinat == "Sains" || daftarPeserta[index].BidangMinat == "Olahraga" || daftarPeserta[index].BidangMinat == "Prakarya" || daftarPeserta[index].BidangMinat == "Sosial" {
 			hasilMinat = "valid"
 		} else {
-			fmt.Println("Bidang minat tidak valid!")
-			fmt.Print("Pilihan: Seni / Sains / Olahraga / Prakarya / Sosial\nMasukkan Bidang Minat : ")
-			fmt.Scan(&daftarPeserta[index].BidangMinat)
+			fmt.Println("  Bidang minat tidak valid!")
 		}
 	}
-	fmt.Print("Katalog Kursus Baru : ")
-	fmt.Scan(&daftarPeserta[index].KatalogKursus)
-	fmt.Println("Data berhasil diubah!")
+	hasilKursus = "tidak_valid"
+	for hasilKursus == "tidak_valid" {
+		fmt.Print("  Masukkan Kursus : ")
+		daftarPeserta[index].Kursus = bacaString()
+		if cekString(daftarPeserta[index].Kursus) {
+			hasilKursus = "valid"
+		} else {
+			fmt.Println("  Kursus tidak valid (harus diawali kapital)!")
+		}
+	}
+	clearScreen()
+	fmt.Println()
+	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  │       !!! DATA BERHASIL DIUBAH !!!       │")
+	fmt.Println("  └──────────────────────────────────────────┘")
 }
 
 func cariIndexByID(id int) int {
@@ -451,39 +601,62 @@ func cariIndexByID(id int) int {
 func hapusPeserta() {
 	clearScreen()
 	var id, index, i int
-	fmt.Println("\n----- HAPUS PESERTA -----")
-	fmt.Print("Masukkan ID peserta: ")
-	fmt.Scan(&id)
+	fmt.Println()
+	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  │             DATA PESERTA                 │")
+	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Print("  Masukkan ID peserta : ")
+	inputString = bacaString()
+	id, valid = stringKeInt(inputString)
+	for !valid {
+		fmt.Println("  Input ID tidak valid!")
+		fmt.Print("  Masukkan ID peserta : ")
+		inputString = bacaString()
+		id, valid = stringKeInt(inputString)
+	}
 	index = cariIndexByID(id)
 	if index == -1 {
-		fmt.Println("Data tidak ditemukan!!!")
+		fmt.Println()
+		fmt.Println("  ┌──────────────────────────────────────────┐")
+		fmt.Println("  │     !!! DATA TIDAK DITEMUKAN !!!         │")
+		fmt.Println("  └──────────────────────────────────────────┘")
 		return
 	}
-	fmt.Println("Data yang akan dihapus:")
-	fmt.Println("ID : ", daftarPeserta[index].ID)
-	fmt.Println("Umur : ", daftarPeserta[index].Umur)
-	fmt.Println("Email : ", daftarPeserta[index].Email)
-	fmt.Println("No HP : ", daftarPeserta[index].NoHP)
-	fmt.Println("Bidang Minat : ", daftarPeserta[index].BidangMinat)
-	fmt.Println("Nama : ", daftarPeserta[index].Nama)
-	fmt.Println("Kursus : ", daftarPeserta[index].KatalogKursus)
+	fmt.Println("  ┌────┬────────────────────┬─────┬────────────────────────────┬──────────────────┬──────────────┬────────────────────┬────────────┐")
+	fmt.Printf("  │ %-2s │ %-18s │ %-3s │ %-26s │ %-16s │ %-12s │ %-18s │ %-10s │\n", "ID", "Nama", "Umr", "Email", "No HP", "Minat", "Kursus", "Tanggal")
+	fmt.Println("  ├────┼────────────────────┼─────┼────────────────────────────┼──────────────────┼──────────────┼────────────────────┼────────────┤")
+	fmt.Printf("  │ %-2d │ %-18s │ %-3d │ %-26s │ %-16s │ %-12s │ %-18s │ %-10s │\n", daftarPeserta[index].ID, daftarPeserta[index].Nama, daftarPeserta[index].Umur, daftarPeserta[index].Email, daftarPeserta[index].NoHP, daftarPeserta[index].BidangMinat, daftarPeserta[index].Kursus, daftarPeserta[index].TanggalDaftar)
+	fmt.Println("  └────┴────────────────────┴─────┴────────────────────────────┴──────────────────┴──────────────┴────────────────────┴────────────┘")
 	for i = index; i < jumlahPeserta-1; i++ {
 		daftarPeserta[i] = daftarPeserta[i+1]
 	}
 	jumlahPeserta--
-	fmt.Printf("Data dengan ID %d berhasil dihapus!\n", id)
+	fmt.Printf("  Data dengan ID %d berhasil dihapus!\n", id)
 }
 
 func menuPencarian() {
 	clearScreen()
 	var pilih int
-	fmt.Println("\n----- MENU PENCARIAN -----")
-	fmt.Println("1. Sequential Search Nama")
-	fmt.Println("2. Sequential Search Bidang Minat")
-	fmt.Println("3. Binary Search ID")
-	fmt.Println("4. Kembali ke Menu Utama")
-	fmt.Print("Pilih menu: ")
-	fmt.Scan(&pilih)
+	fmt.Println()
+	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  │             MENU PENCARIAN               │")
+	fmt.Println("  ├──────────────────────────────────────────┤")
+	fmt.Println("  │                                          │")
+	fmt.Println("  │   [1]  Sequential Search  —  Nama        │")
+	fmt.Println("  │   [2]  Sequential Search  —  Bidang Minat│")
+	fmt.Println("  │   [3]  Binary Search      —  ID          │")
+	fmt.Println("  │   [4]  Kembali ke Menu Utama             │")
+	fmt.Println("  │                                          │")
+	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Print("  Pilih menu : ")
+	inputString = bacaString()
+	pilih, valid = stringKeInt(inputString)
+	for !valid {
+		fmt.Println("  Input tidak valid!")
+		fmt.Print("  Masukkan  pilih menu: ")
+		inputString = bacaString()
+		pilih, valid = stringKeInt(inputString)
+	}
 	for pilih != 4 {
 		switch pilih {
 		case 1:
@@ -495,70 +668,134 @@ func menuPencarian() {
 		case 4:
 			return
 		default:
-			fmt.Println("Menu tidak tersedia.")
+			fmt.Println("  Menu tidak tersedia.")
 		}
-		fmt.Println("\n----- MENU PENCARIAN -----")
-		fmt.Println("1. Sequential Search Nama")
-		fmt.Println("2. Sequential Search Bidang Minat")
-		fmt.Println("3. Binary Search ID")
-		fmt.Println("4. Kembali ke Menu Utama")
-		fmt.Print("Pilih menu: ")
-		fmt.Scan(&pilih)
+		fmt.Println()
+		fmt.Println("  ┌──────────────────────────────────────────┐")
+		fmt.Println("  │             MENU PENCARIAN               │")
+		fmt.Println("  ├──────────────────────────────────────────┤")
+		fmt.Println("  │                                          │")
+		fmt.Println("  │   [1]  Sequential Search  —  Nama        │")
+		fmt.Println("  │   [2]  Sequential Search  —  Bidang Minat│")
+		fmt.Println("  │   [3]  Binary Search      —  ID          │")
+		fmt.Println("  │   [4]  Kembali ke Menu Utama             │")
+		fmt.Println("  │                                          │")
+		fmt.Println("  └──────────────────────────────────────────┘")
+		fmt.Print("  Pilih menu : ")
+		inputString = bacaString()
+		pilih, valid = stringKeInt(inputString)
+		for !valid {
+			fmt.Println("  Input tidak valid!")
+			fmt.Print("  Masukkan  pilih menu: ")
+			inputString = bacaString()
+			pilih, valid = stringKeInt(inputString)
+		}
 	}
 }
 
 func sequentialSearchNama() {
 	clearScreen()
-	var nama string
+	var nama, hasilNama string
 	var ditemukan bool
 	var i int
-	fmt.Println("\n----- SEARCH NAMA -----")
-	fmt.Print("Masukkan nama: ")
-	fmt.Scan(&nama)
+	fmt.Println()
+	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  │             SEARCH NAMA                  │")
+	fmt.Println("  └──────────────────────────────────────────┘")
+	hasilNama = "tidak_valid"
+	for hasilNama == "tidak_valid" {
+		fmt.Print("  Masukkan Nama : ")
+		nama = bacaString()
+		if cekString(nama) {
+			hasilNama = "valid"
+		} else {
+			fmt.Println("  Nama Harus Dimulai Dengan Huruf Kapital!")
+		}
+	}
 	for i = 0; i < jumlahPeserta; i++ {
 		if daftarPeserta[i].Nama == nama {
-			fmt.Println("Data ditemukan!")
+			fmt.Println()
+			fmt.Println("  ┌──────────────────────────────────────────┐")
+			fmt.Println("  │          !!! DATA DITEMUKAN !!!          │")
+			fmt.Println("  └──────────────────────────────────────────┘")
 			tampilSatuPeserta(i)
 			ditemukan = true
 		}
 	}
 	if !ditemukan {
-		fmt.Println("Data tidak ditemukan.")
+		clearScreen()
+		fmt.Println()
+		fmt.Println("  ┌──────────────────────────────────────────┐")
+		fmt.Println("  │     !!! DATA TIDAK DITEMUKAN !!!         │")
+		fmt.Println("  └──────────────────────────────────────────┘")
 	}
 }
 
 func sequentialSearchMinat() {
 	clearScreen()
-	var minat string
+	var minat, hasilMinat string
 	var ditemukan bool
 	var i int
-	fmt.Println("\n----- SEARCH BIDANG MINAT -----")
-	fmt.Print("Masukkan bidang minat: ")
-	fmt.Scan(&minat)
+	fmt.Println()
+	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  │         SEARCH BIDANG MINAT              │")
+	fmt.Println("  └──────────────────────────────────────────┘")
+	hasilMinat = "salah"
+	for hasilMinat == "salah" {
+		fmt.Print("  Pilihan: Seni / Sains / Olahraga / Prakarya / Sosial\n  Masukkan Bidang Minat : ")
+		minat = bacaString()
+		if minat == "Seni" || minat == "Sains" || minat == "Olahraga" || minat == "Prakarya" || minat == "Sosial" {
+			hasilMinat = "benar"
+		} else {
+			fmt.Println("  Bidang minat tidak valid!")
+		}
+	}
 	for i = 0; i < jumlahPeserta; i++ {
 		if daftarPeserta[i].BidangMinat == minat {
+			fmt.Println()
+			fmt.Println("  ┌──────────────────────────────────────────┐")
+			fmt.Println("  │          !!! DATA DITEMUKAN !!!          │")
+			fmt.Println("  └──────────────────────────────────────────┘")
 			tampilSatuPeserta(i)
 			ditemukan = true
 		}
 	}
 	if !ditemukan {
-		fmt.Println("Data tidak ditemukan.")
+		clearScreen()
+		fmt.Println()
+		fmt.Println("  ┌──────────────────────────────────────────┐")
+		fmt.Println("  │     !!! DATA TIDAK DITEMUKAN !!!         │")
+		fmt.Println("  └──────────────────────────────────────────┘")
 	}
 }
 
 func binarySearchID() {
 	clearScreen()
 	var id, low, high, mid int
-	fmt.Println("\n----- BINARY SEARCH -----")
+	fmt.Println()
+	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  │           BINARY SEARCH                  │")
+	fmt.Println("  └──────────────────────────────────────────┘")
 	selectionSortID()
-	fmt.Print("Masukkan ID yang dicari: ")
-	fmt.Scan(&id)
+	fmt.Print("  Masukkan ID yang dicari: ")
+	inputString = bacaString()
+	id, valid = stringKeInt(inputString)
+	for !valid {
+		fmt.Println("  ID tidak valid!")
+		fmt.Print("  Masukkan ID yang dicari: ")
+		inputString = bacaString()
+		id, valid = stringKeInt(inputString)
+	}
 	low = 0
 	high = jumlahPeserta - 1
 	for low <= high {
 		mid = (low + high) / 2
 		if daftarPeserta[mid].ID == id {
-			fmt.Println("Data ditemukan!")
+			clearScreen()
+			fmt.Println()
+			fmt.Println("  ┌──────────────────────────────────────────┐")
+			fmt.Println("  │          !!! DATA DITEMUKAN !!!          │")
+			fmt.Println("  └──────────────────────────────────────────┘")
 			tampilSatuPeserta(mid)
 			return
 		} else if daftarPeserta[mid].ID < id {
@@ -567,29 +804,48 @@ func binarySearchID() {
 			high = mid - 1
 		}
 	}
-	fmt.Println("Data tidak ditemukan!")
+	clearScreen()
+	fmt.Println()
+	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  │     !!! DATA TIDAK DITEMUKAN !!!         │")
+	fmt.Println("  └──────────────────────────────────────────┘")
 }
 
 func menuSorting() {
 	clearScreen()
 	var pilih int
-	fmt.Println("\n----- MENU SORTING -----")
-	fmt.Println("1. Selection Sort ID")
-	fmt.Println("2. Insertion Sort Nama")
-	fmt.Print("Pilih menu: ")
-	fmt.Scan(&pilih)
+	fmt.Println()
+	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  │            MENU SORTING                  │")
+	fmt.Println("  ├──────────────────────────────────────────┤")
+	fmt.Println("  │                                          │")
+	fmt.Println("  │   [1]  Selection Sort  —  ID             │")
+	fmt.Println("  │   [2]  Insertion Sort  —  Nama           │")
+	fmt.Println("  │                                          │")
+	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Print("  Pilih menu: ")
+	inputString = bacaString()
+	pilih, valid = stringKeInt(inputString)
+	for !valid {
+		fmt.Println("  Input tidak valid!")
+		fmt.Print("  Pilih menu: ")
+		inputString = bacaString()
+		pilih, valid = stringKeInt(inputString)
+	}
 	switch pilih {
 	case 1:
 		selectionSortID()
 	case 2:
 		insertionSortNama()
 	default:
-		fmt.Println("Menu tidak tersedia.")
+		fmt.Println()
+		fmt.Println("  ┌──────────────────────────────────────────┐")
+		fmt.Println("  │       !!! MENU TIDAK TERSEDIA !!!        │")
+		fmt.Println("  └──────────────────────────────────────────┘")
 	}
 }
 
 func selectionSortID() {
-	clearScreen()
 	var min, j, i int
 	var temp Peserta
 	for i = 0; i < jumlahPeserta-1; i++ {
@@ -603,11 +859,14 @@ func selectionSortID() {
 		daftarPeserta[i] = daftarPeserta[min]
 		daftarPeserta[min] = temp
 	}
-	fmt.Println("Data berhasil diurutkan berdasarkan ID!")
+	fmt.Println()
+	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  │         DATA BERHASIL DIURUTKAN          │")
+	fmt.Println("  │        !!!   BERDASARKAN ID  !!!         │")
+	fmt.Println("  └──────────────────────────────────────────┘")
 }
 
 func insertionSortNama() {
-	clearScreen()
 	var temp Peserta
 	var j, i int
 	for i = 1; i < jumlahPeserta; i++ {
@@ -619,7 +878,11 @@ func insertionSortNama() {
 		}
 		daftarPeserta[j+1] = temp
 	}
-	fmt.Println("Data berhasil diurutkan berdasarkan Nama!")
+	fmt.Println()
+	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  │         DATA BERHASIL DIURUTKAN          │")
+	fmt.Println("  │       !!!   BERDASARKAN NAMA  !!!        │")
+	fmt.Println("  └──────────────────────────────────────────┘")
 }
 
 func statistikPeserta() {
@@ -627,7 +890,10 @@ func statistikPeserta() {
 	var aktif, idTerbesar, idTerkecil, minatSeni, minatSains, minatOlahraga, minatPrakarya, minatSosial int
 	var i int
 	if jumlahPeserta == 0 {
-		fmt.Println("\nBelum ada data peserta.")
+		fmt.Println()
+		fmt.Println("  ┌──────────────────────────────────────────┐")
+		fmt.Println("  │      !!! BELUM ADA DATA PESERTA !!!      │")
+		fmt.Println("  └──────────────────────────────────────────┘")
 		return
 	}
 	idTerbesar = daftarPeserta[0].ID
@@ -654,39 +920,51 @@ func statistikPeserta() {
 			minatSosial++
 		}
 	}
-	fmt.Println("\n===== STATISTIK PESERTA =====")
-	fmt.Println("Total Peserta Aktif :", aktif)
-	fmt.Println("Jumlah Minat Seni :", minatSeni)
-	fmt.Println("Jumlah Minat Sains :", minatSains)
-	fmt.Println("Jumlah Minat Olahraga :", minatOlahraga)
-	fmt.Println("Jumlah Minat Prakarya :", minatPrakarya)
-	fmt.Println("Jumlah Minat Sosial :", minatSosial)
-	fmt.Println("ID Terbesar :", idTerbesar)
-	fmt.Println("ID Terkecil :", idTerkecil)
+	fmt.Println()
+	fmt.Println("  ╔══════════════════════════════════════════╗")
+	fmt.Println("  ║           STATISTIK PESERTA              ║")
+	fmt.Println("  ╠══════════════════════════════════════════╣")
+	fmt.Println("  ║                                          ║")
+	fmt.Printf("  ║   Total Peserta Aktif    : %-14d║\n", aktif)
+	fmt.Println("  ║                                          ║")
+	fmt.Println("  ╠═══════════ Bidang Minat ═════════════════╣")
+	fmt.Println("  ║                                          ║")
+	fmt.Printf("  ║   Seni                   : %-14d║\n", minatSeni)
+	fmt.Printf("  ║   Sains                  : %-14d║\n", minatSains)
+	fmt.Printf("  ║   Olahraga               : %-14d║\n", minatOlahraga)
+	fmt.Printf("  ║   Prakarya               : %-14d║\n", minatPrakarya)
+	fmt.Printf("  ║   Sosial                 : %-14d║\n", minatSosial)
+	fmt.Println("  ║                                          ║")
+	fmt.Println("  ╠══════════════════════════════════════════╣")
+	fmt.Println("  ║                                          ║")
+	fmt.Printf("  ║   ID Terbesar            : %-14d║\n", idTerbesar)
+	fmt.Printf("  ║   ID Terkecil            : %-14d║\n", idTerkecil)
+	fmt.Println("  ║                                          ║")
+	fmt.Println("  ╚══════════════════════════════════════════╝")
 
 	if minatSeni > minatSains && minatSeni > minatOlahraga && minatSeni > minatPrakarya && minatSeni > minatSosial {
 
-		fmt.Println("Bidang Terpopuler : Seni")
+		fmt.Println("  Bidang Terpopuler : Seni")
 
 	} else if minatSains > minatSeni && minatSains > minatOlahraga && minatSains > minatPrakarya && minatSains > minatSosial {
 
-		fmt.Println("Bidang Terpopuler : Sains")
+		fmt.Println("  Bidang Terpopuler : Sains")
 
 	} else if minatOlahraga > minatSeni && minatOlahraga > minatSains && minatOlahraga > minatPrakarya && minatOlahraga > minatSosial {
 
-		fmt.Println("Bidang Terpopuler : Olahraga")
+		fmt.Println("  Bidang Terpopuler : Olahraga")
 
 	} else if minatPrakarya > minatSeni && minatPrakarya > minatSains && minatPrakarya > minatOlahraga && minatPrakarya > minatSosial {
 
-		fmt.Println("Bidang Terpopuler : Prakarya")
+		fmt.Println("  Bidang Terpopuler : Prakarya")
 
 	} else if minatSosial > minatSeni && minatSosial > minatSains && minatSosial > minatOlahraga && minatSosial > minatPrakarya {
 
-		fmt.Println("Bidang Terpopuler : Sosial")
+		fmt.Println("  Bidang Terpopuler : Sosial")
 
 	} else {
 
-		fmt.Println("Bidang Terpopuler : Sama Banyak")
+		fmt.Println("  Bidang Terpopuler : Sama Banyak")
 	}
 }
 
@@ -697,17 +975,28 @@ func tampilSatuPeserta(i int) {
 	} else {
 		status = "Tidak"
 	}
-	fmt.Println("--------------------------------")
-	fmt.Println("ID :", daftarPeserta[i].ID)
-	fmt.Println("Nama :", daftarPeserta[i].Nama)
-	fmt.Println("Umur :", daftarPeserta[i].Umur)
-	fmt.Println("Email :", daftarPeserta[i].Email)
-	fmt.Println("No HP :", daftarPeserta[i].NoHP)
-	fmt.Println("Bidang Minat :", daftarPeserta[i].BidangMinat)
-	fmt.Println("Katalog Kursus :", daftarPeserta[i].KatalogKursus)
-	fmt.Println("Tanggal Daftar :", daftarPeserta[i].TanggalDaftar)
-	fmt.Println("Status :", status)
-	fmt.Println("--------------------------------")
+	fmt.Println()
+	fmt.Println("  ┌───────────────────────────────────────────────────────────┐")
+	fmt.Println("  │                    DETAIL PESERTA                         │")
+	fmt.Println("  ├──────────────────────────┬────────────────────────────────┤")
+	fmt.Printf("  │  ID Peserta              │ %-30d │\n", daftarPeserta[i].ID)
+	fmt.Println("  ├──────────────────────────┼────────────────────────────────┤")
+	fmt.Printf("  │  Nama                    │ %-30s │\n", daftarPeserta[i].Nama)
+	fmt.Println("  ├──────────────────────────┼────────────────────────────────┤")
+	fmt.Printf("  │  Umur                    │ %-30d │\n", daftarPeserta[i].Umur)
+	fmt.Println("  ├──────────────────────────┼────────────────────────────────┤")
+	fmt.Printf("  │  Email                   │ %-30s │\n", daftarPeserta[i].Email)
+	fmt.Println("  ├──────────────────────────┼────────────────────────────────┤")
+	fmt.Printf("  │  No HP                   │ %-30s │\n", daftarPeserta[i].NoHP)
+	fmt.Println("  ├──────────────────────────┼────────────────────────────────┤")
+	fmt.Printf("  │  Bidang Minat            │ %-30s │\n", daftarPeserta[i].BidangMinat)
+	fmt.Println("  ├──────────────────────────┼────────────────────────────────┤")
+	fmt.Printf("  │  Kursus                  │ %-30s │\n", daftarPeserta[i].Kursus)
+	fmt.Println("  ├──────────────────────────┼────────────────────────────────┤")
+	fmt.Printf("  │  Tanggal Daftar          │ %-30s │\n", daftarPeserta[i].TanggalDaftar)
+	fmt.Println("  ├──────────────────────────┼────────────────────────────────┤")
+	fmt.Printf("  │  Status                  │ %-30s │\n", status)
+	fmt.Println("  └──────────────────────────┴────────────────────────────────┘")
 }
 
 func clearScreen() {
