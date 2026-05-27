@@ -56,6 +56,12 @@ func main() {
 		fmt.Print("  Pilih menu : ")
 		inputString = bacaString()
 		pilihan, valid = stringKeInt(inputString)
+		for !valid {
+			fmt.Println("  Input tidak valid!")
+			fmt.Print("  Masukkan  pilih menu: ")
+			inputString = bacaString()
+			pilihan, valid = stringKeInt(inputString)
+		}
 		switch pilihan {
 		case 1:
 			tambahPeserta()
