@@ -30,38 +30,31 @@ var valid bool
 
 func main() {
 	clearScreen()
-	isiDataDummy()
 	reader = bufio.NewReader(os.Stdin)
 	var pilihan int
 	var menu bool
 	menu = true
 	for menu == true {
 		fmt.Println()
-		fmt.Println("  ╔══════════════════════════════════════════╗")
-		fmt.Println("  ║                                          ║")
-		fmt.Println("  ║                 KURSUSIN                 ║")
-		fmt.Println("  ║                                          ║")
-		fmt.Println("  ╠══════════════════════════════════════════╣")
-		fmt.Println("  ║                                          ║")
-		fmt.Println("  ║   [1]  Tambah Peserta                    ║")
-		fmt.Println("  ║   [2]  Tampilkan Peserta                 ║")
-		fmt.Println("  ║   [3]  Ubah Peserta                      ║")
-		fmt.Println("  ║   [4]  Hapus Peserta                     ║")
-		fmt.Println("  ║   [5]  Cari Peserta                      ║")
-		fmt.Println("  ║   [6]  Urutkan Peserta                   ║")
-		fmt.Println("  ║   [7]  Statistik Peserta                 ║")
-		fmt.Println("  ║   [8]  Keluar                            ║")
-		fmt.Println("  ║                                          ║")
-		fmt.Println("  ╚══════════════════════════════════════════╝")
+		fmt.Println("  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+		fmt.Println("  ┃                                          ┃")
+		fmt.Println("  ┃                 KURSUSIN                 ┃")
+		fmt.Println("  ┃                                          ┃")
+		fmt.Println("  ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫")
+		fmt.Println("  ┃                                          ┃")
+		fmt.Println("  ┃  	1⃣  Tambah Peserta                    ┃")
+		fmt.Println("  ┃   	2⃣  Tampilkan Peserta                 ┃")
+		fmt.Println("  ┃   	3⃣  Ubah Peserta                      ┃")
+		fmt.Println("  ┃   	4⃣  Hapus Peserta                     ┃")
+		fmt.Println("  ┃   	5⃣  Cari Peserta                      ┃")
+		fmt.Println("  ┃   	6⃣  Urutkan Peserta                   ┃")
+		fmt.Println("  ┃   	7⃣  Statistik Peserta                 ┃")
+		fmt.Println("  ┃   	8⃣  Keluar                            ┃")
+		fmt.Println("  ┃                                          ┃")
+		fmt.Println("  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
 		fmt.Print("  Pilih menu : ")
 		inputString = bacaString()
 		pilihan, valid = stringKeInt(inputString)
-		for !valid {
-			fmt.Println("  Input tidak valid!")
-			fmt.Print("  Masukkan  pilih menu: ")
-			inputString = bacaString()
-			pilihan, valid = stringKeInt(inputString)
-		}
 		switch pilihan {
 		case 1:
 			tambahPeserta()
@@ -80,9 +73,9 @@ func main() {
 		case 8:
 			clearScreen()
 			fmt.Println()
-			fmt.Println("  ╔══════════════════════════════════════════╗")
-			fmt.Println("  ║         !!!  PROGRAM SELESAI  !!!        ║")
-			fmt.Println("  ╚══════════════════════════════════════════╝")
+			fmt.Println("  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+			fmt.Println("  ┃         !!!  PROGRAM SELESAI  !!!        ┃")
+			fmt.Println("  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
 			menu = false
 		default:
 			clearScreen()
@@ -111,11 +104,11 @@ func tambahPeserta() {
 	p.ID = idBaru
 
 	fmt.Println()
-	fmt.Println("  ┌──────────────────────────────────────────┐")
-	fmt.Println("  │            TAMBAH PESERTA                │")
-	fmt.Println("  ├──────────────────────────────────────────┤")
-	fmt.Printf("  │  ID Peserta    : %-24d│\n", idBaru)
-	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Println("  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+	fmt.Println("  ┃            TAMBAH PESERTA                ┃")
+	fmt.Println("  ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫")
+	fmt.Printf("  ┃  ID Peserta    : %-24d┃\n", idBaru)
+	fmt.Println("  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
 	fmt.Println()
 
 	hasilNama = "tidak_valid"
@@ -267,7 +260,7 @@ func bacaString() string {
 
 	input, err = reader.ReadString('\n')
 	if err != nil {
-		fmt.Println("  Gagal membaca input!")
+		fmt.Printf("\n  Oh udh nih?!\n  ywdh... ")
 		return ""
 	}
 
@@ -460,17 +453,17 @@ func tampilPeserta() {
 	var i int
 	clearScreen()
 	fmt.Println()
-	fmt.Println("  ┌──────────────────────────────────────────┐")
-	fmt.Println("  │             DATA PESERTA                 │")
-	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Println("  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+	fmt.Println("  ┃             DATA PESERTA                 ┃")
+	fmt.Println("  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
 	if jumlahPeserta == 0 {
 		fmt.Println()
-		fmt.Println("  ┌──────────────────────────────────────────┐")
-		fmt.Println("  │     !!! BELUM ADA DATA PESERTA !!!       │")
-		fmt.Println("  └──────────────────────────────────────────┘")
+		fmt.Println("  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+		fmt.Println("  ┃     !!! BELUM ADA DATA PESERTA !!!       ┃")
+		fmt.Println("  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
 		return
 	}
-	fmt.Println("  ┌────┬────────────────────┬──────┬────────────────────────────┬──────────────────┬──────────────┬────────────────────┬────────────┬────────┐")
+	fmt.Println("  ╭────┬────────────────────┬──────┬────────────────────────────┬──────────────────┬──────────────┬────────────────────┬────────────┬────────╮")
 	fmt.Printf("  │ %-2s │ %-18s │ %-4s │ %-26s │ %-16s │ %-12s │ %-18s │ %-10s │ %-6s │\n", "ID", "Nama", "Umur", "Email", "No HP", "Minat", "Kursus", "Tanggal", "Status")
 	fmt.Println("  ├────┼────────────────────┼──────┼────────────────────────────┼──────────────────┼──────────────┼────────────────────┼────────────┼────────┤")
 
@@ -483,7 +476,7 @@ func tampilPeserta() {
 		}
 		fmt.Printf("  │ %-2d │ %-18s │ %-4d │ %-26s │ %-16s │ %-12s │ %-18s │ %-10s │ %-6s │\n", daftarPeserta[i].ID, daftarPeserta[i].Nama, daftarPeserta[i].Umur, daftarPeserta[i].Email, daftarPeserta[i].NoHP, daftarPeserta[i].BidangMinat, daftarPeserta[i].Kursus, daftarPeserta[i].TanggalDaftar, status)
 	}
-	fmt.Println("  └────┴────────────────────┴──────┴────────────────────────────┴──────────────────┴──────────────┴────────────────────┴────────────┴────────┘")
+	fmt.Println("  ╰────┴────────────────────┴──────┴────────────────────────────┴──────────────────┴──────────────┴────────────────────┴────────────┴────────╯")
 	fmt.Printf("  Total peserta : %d\n", jumlahPeserta)
 }
 
@@ -493,17 +486,17 @@ func ubahPeserta() {
 	var p Peserta
 	var hasilKursus, hasilEmail, hasilHp, hasilNama, hasilUmur, hasilMinat string
 	fmt.Println()
-	fmt.Println("  ┌──────────────────────────────────────────┐")
-	fmt.Println("  │             DATA PESERTA                 │")
-	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Println("  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+	fmt.Println("  ┃             DATA PESERTA                 ┃")
+	fmt.Println("  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
 	fmt.Print("  Masukkan ID peserta : ")
 	inputString = bacaString()
 	id, valid = stringKeInt(inputString)
 	for !valid {
 		fmt.Println()
-		fmt.Println("  ┌──────────────────────────────────────────┐")
+		fmt.Println("  ╭──────────────────────────────────────────╮")
 		fmt.Println("  │       !!! ID HARUS BERUPA ANGKA !!!      │")
-		fmt.Println("  └──────────────────────────────────────────┘")
+		fmt.Println("  ╰──────────────────────────────────────────╯")
 		fmt.Print("  Masukkan ID peserta : ")
 		inputString = bacaString()
 		id, valid = stringKeInt(inputString)
@@ -511,16 +504,16 @@ func ubahPeserta() {
 	index = cariIndexByID(id)
 	if index == -1 {
 		fmt.Println()
-		fmt.Println("  ┌──────────────────────────────────────────┐")
+		fmt.Println("  ╭──────────────────────────────────────────╮")
 		fmt.Println("  │     !!! DATA TIDAK DITEMUKAN !!!         │")
-		fmt.Println("  └──────────────────────────────────────────┘")
+		fmt.Println("  ╰──────────────────────────────────────────╯")
 		return
 	}
 	fmt.Println()
-	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  ╭──────────────────────────────────────────╮")
 	fmt.Println("  │              DATA DITEMUKAN              │")
 	fmt.Println("  │            MASUKKAN DATA BARU            │")
-	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Println("  ╰──────────────────────────────────────────╯")
 	fmt.Print("  Nama Depan Baru : ")
 	daftarPeserta[index].Nama = bacaString()
 	hasilNama = "tidak_valid"
@@ -589,9 +582,9 @@ func ubahPeserta() {
 	}
 	clearScreen()
 	fmt.Println()
-	fmt.Println("  ┌──────────────────────────────────────────┐")
-	fmt.Println("  │       !!! DATA BERHASIL DIUBAH !!!       │")
-	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Println("  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+	fmt.Println("  ┃       !!! DATA BERHASIL DIUBAH !!!       ┃")
+	fmt.Println("  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
 }
 
 func cariIndexByID(id int) int {
@@ -608,9 +601,9 @@ func hapusPeserta() {
 	clearScreen()
 	var id, index, i int
 	fmt.Println()
-	fmt.Println("  ┌──────────────────────────────────────────┐")
-	fmt.Println("  │             DATA PESERTA                 │")
-	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Println("  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+	fmt.Println("  ┃             DATA PESERTA                 ┃")
+	fmt.Println("  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
 	fmt.Print("  Masukkan ID peserta : ")
 	inputString = bacaString()
 	id, valid = stringKeInt(inputString)
@@ -623,16 +616,16 @@ func hapusPeserta() {
 	index = cariIndexByID(id)
 	if index == -1 {
 		fmt.Println()
-		fmt.Println("  ┌──────────────────────────────────────────┐")
+		fmt.Println("  ╭──────────────────────────────────────────╮")
 		fmt.Println("  │     !!! DATA TIDAK DITEMUKAN !!!         │")
-		fmt.Println("  └──────────────────────────────────────────┘")
+		fmt.Println("  ╰──────────────────────────────────────────╯")
 		return
 	}
-	fmt.Println("  ┌────┬────────────────────┬─────┬────────────────────────────┬──────────────────┬──────────────┬────────────────────┬────────────┐")
+	fmt.Println("  ╭────┬────────────────────┬─────┬────────────────────────────┬──────────────────┬──────────────┬────────────────────┬────────────╮")
 	fmt.Printf("  │ %-2s │ %-18s │ %-3s │ %-26s │ %-16s │ %-12s │ %-18s │ %-10s │\n", "ID", "Nama", "Umr", "Email", "No HP", "Minat", "Kursus", "Tanggal")
 	fmt.Println("  ├────┼────────────────────┼─────┼────────────────────────────┼──────────────────┼──────────────┼────────────────────┼────────────┤")
 	fmt.Printf("  │ %-2d │ %-18s │ %-3d │ %-26s │ %-16s │ %-12s │ %-18s │ %-10s │\n", daftarPeserta[index].ID, daftarPeserta[index].Nama, daftarPeserta[index].Umur, daftarPeserta[index].Email, daftarPeserta[index].NoHP, daftarPeserta[index].BidangMinat, daftarPeserta[index].Kursus, daftarPeserta[index].TanggalDaftar)
-	fmt.Println("  └────┴────────────────────┴─────┴────────────────────────────┴──────────────────┴──────────────┴────────────────────┴────────────┘")
+	fmt.Println("  ╰────┴────────────────────┴─────┴────────────────────────────┴──────────────────┴──────────────┴────────────────────┴────────────╯")
 	for i = index; i < jumlahPeserta-1; i++ {
 		daftarPeserta[i] = daftarPeserta[i+1]
 	}
@@ -644,16 +637,16 @@ func menuPencarian() {
 	clearScreen()
 	var pilih int
 	fmt.Println()
-	fmt.Println("  ┌──────────────────────────────────────────┐")
-	fmt.Println("  │             MENU PENCARIAN               │")
-	fmt.Println("  ├──────────────────────────────────────────┤")
-	fmt.Println("  │                                          │")
-	fmt.Println("  │   [1]  Sequential Search  —  Nama        │")
-	fmt.Println("  │   [2]  Sequential Search  —  Bidang Minat│")
-	fmt.Println("  │   [3]  Binary Search      —  ID          │")
-	fmt.Println("  │   [4]  Kembali ke Menu Utama             │")
-	fmt.Println("  │                                          │")
-	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Println("  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+	fmt.Println("  ┃             MENU PENCARIAN                ┃")
+	fmt.Println("  ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫")
+	fmt.Println("  ┃                                           ┃")
+	fmt.Println("  ┃   	1⃣  Sequential Search  —  Nama         ┃")
+	fmt.Println("  ┃   	2⃣  Sequential Search  —  Bidang Minat ┃")
+	fmt.Println("  ┃   	3⃣  Binary Search      —  ID           ┃")
+	fmt.Println("  ┃   	4⃣  Kembali ke Menu Utama              ┃")
+	fmt.Println("  ┃                                           ┃")
+	fmt.Println("  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
 	fmt.Print("  Pilih menu : ")
 	inputString = bacaString()
 	pilih, valid = stringKeInt(inputString)
@@ -677,16 +670,16 @@ func menuPencarian() {
 			fmt.Println("  Menu tidak tersedia.")
 		}
 		fmt.Println()
-		fmt.Println("  ┌──────────────────────────────────────────┐")
-		fmt.Println("  │             MENU PENCARIAN               │")
-		fmt.Println("  ├──────────────────────────────────────────┤")
-		fmt.Println("  │                                          │")
-		fmt.Println("  │   [1]  Sequential Search  —  Nama        │")
-		fmt.Println("  │   [2]  Sequential Search  —  Bidang Minat│")
-		fmt.Println("  │   [3]  Binary Search      —  ID          │")
-		fmt.Println("  │   [4]  Kembali ke Menu Utama             │")
-		fmt.Println("  │                                          │")
-		fmt.Println("  └──────────────────────────────────────────┘")
+		fmt.Println("  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+		fmt.Println("  ┃             MENU PENCARIAN                ┃")
+		fmt.Println("  ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫")
+		fmt.Println("  ┃                                           ┃")
+		fmt.Println("  ┃   	1⃣  Sequential Search  —  Nama         ┃")
+		fmt.Println("  ┃   	2⃣  Sequential Search  —  Bidang Minat ┃")
+		fmt.Println("  ┃   	3⃣  Binary Search      —  ID           ┃")
+		fmt.Println("  ┃   	4⃣  Kembali ke Menu Utama              ┃")
+		fmt.Println("  ┃                                           ┃")
+		fmt.Println("  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
 		fmt.Print("  Pilih menu : ")
 		inputString = bacaString()
 		pilih, valid = stringKeInt(inputString)
@@ -705,9 +698,9 @@ func sequentialSearchNama() {
 	var ditemukan bool
 	var i int
 	fmt.Println()
-	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  ╭──────────────────────────────────────────╮")
 	fmt.Println("  │             SEARCH NAMA                  │")
-	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Println("  ╰──────────────────────────────────────────╯")
 	hasilNama = "tidak_valid"
 	for hasilNama == "tidak_valid" {
 		fmt.Print("  Masukkan Nama : ")
@@ -721,9 +714,9 @@ func sequentialSearchNama() {
 	for i = 0; i < jumlahPeserta; i++ {
 		if daftarPeserta[i].Nama == nama {
 			fmt.Println()
-			fmt.Println("  ┌──────────────────────────────────────────┐")
+			fmt.Println("  ╭──────────────────────────────────────────╮")
 			fmt.Println("  │          !!! DATA DITEMUKAN !!!          │")
-			fmt.Println("  └──────────────────────────────────────────┘")
+			fmt.Println("  ╰──────────────────────────────────────────╯")
 			tampilSatuPeserta(i)
 			ditemukan = true
 		}
@@ -731,9 +724,9 @@ func sequentialSearchNama() {
 	if !ditemukan {
 		clearScreen()
 		fmt.Println()
-		fmt.Println("  ┌──────────────────────────────────────────┐")
+		fmt.Println("  ╭──────────────────────────────────────────╮")
 		fmt.Println("  │     !!! DATA TIDAK DITEMUKAN !!!         │")
-		fmt.Println("  └──────────────────────────────────────────┘")
+		fmt.Println("  ╰──────────────────────────────────────────╯")
 	}
 }
 
@@ -743,9 +736,9 @@ func sequentialSearchMinat() {
 	var ditemukan bool
 	var i int
 	fmt.Println()
-	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  ╭──────────────────────────────────────────╮")
 	fmt.Println("  │         SEARCH BIDANG MINAT              │")
-	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Println("  ╰──────────────────────────────────────────╯")
 	hasilMinat = "salah"
 	for hasilMinat == "salah" {
 		fmt.Print("  Pilihan: Seni / Sains / Olahraga / Prakarya / Sosial\n  Masukkan Bidang Minat : ")
@@ -759,9 +752,9 @@ func sequentialSearchMinat() {
 	for i = 0; i < jumlahPeserta; i++ {
 		if daftarPeserta[i].BidangMinat == minat {
 			fmt.Println()
-			fmt.Println("  ┌──────────────────────────────────────────┐")
+			fmt.Println("  ╭──────────────────────────────────────────╮")
 			fmt.Println("  │          !!! DATA DITEMUKAN !!!          │")
-			fmt.Println("  └──────────────────────────────────────────┘")
+			fmt.Println("  ╰──────────────────────────────────────────╯")
 			tampilSatuPeserta(i)
 			ditemukan = true
 		}
@@ -769,9 +762,9 @@ func sequentialSearchMinat() {
 	if !ditemukan {
 		clearScreen()
 		fmt.Println()
-		fmt.Println("  ┌──────────────────────────────────────────┐")
+		fmt.Println("  ╭──────────────────────────────────────────╮")
 		fmt.Println("  │     !!! DATA TIDAK DITEMUKAN !!!         │")
-		fmt.Println("  └──────────────────────────────────────────┘")
+		fmt.Println("  ╰──────────────────────────────────────────╯")
 	}
 }
 
@@ -779,9 +772,9 @@ func binarySearchID() {
 	clearScreen()
 	var id, low, high, mid int
 	fmt.Println()
-	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  ╭──────────────────────────────────────────╮")
 	fmt.Println("  │           BINARY SEARCH                  │")
-	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Println("  ╰──────────────────────────────────────────╯")
 	selectionSortID()
 	fmt.Print("  Masukkan ID yang dicari: ")
 	inputString = bacaString()
@@ -799,9 +792,9 @@ func binarySearchID() {
 		if daftarPeserta[mid].ID == id {
 			clearScreen()
 			fmt.Println()
-			fmt.Println("  ┌──────────────────────────────────────────┐")
+			fmt.Println("  ╭──────────────────────────────────────────╮")
 			fmt.Println("  │          !!! DATA DITEMUKAN !!!          │")
-			fmt.Println("  └──────────────────────────────────────────┘")
+			fmt.Println("  ╰──────────────────────────────────────────╯")
 			tampilSatuPeserta(mid)
 			return
 		} else if daftarPeserta[mid].ID < id {
@@ -812,23 +805,23 @@ func binarySearchID() {
 	}
 	clearScreen()
 	fmt.Println()
-	fmt.Println("  ┌──────────────────────────────────────────┐")
+	fmt.Println("  ╭──────────────────────────────────────────╮")
 	fmt.Println("  │     !!! DATA TIDAK DITEMUKAN !!!         │")
-	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Println("  ╰──────────────────────────────────────────╯")
 }
 
 func menuSorting() {
 	clearScreen()
 	var pilih int
 	fmt.Println()
-	fmt.Println("  ┌──────────────────────────────────────────┐")
-	fmt.Println("  │            MENU SORTING                  │")
-	fmt.Println("  ├──────────────────────────────────────────┤")
-	fmt.Println("  │                                          │")
-	fmt.Println("  │   [1]  Selection Sort  —  ID             │")
-	fmt.Println("  │   [2]  Insertion Sort  —  Nama           │")
-	fmt.Println("  │                                          │")
-	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Println("  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+	fmt.Println("  ┃             MENU SORTING                  ┃")
+	fmt.Println("  ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫")
+	fmt.Println("  ┃                                           ┃")
+	fmt.Println("  ┃   	1⃣  Selection Sort  —  ID              ┃")
+	fmt.Println("  ┃   	2⃣  Insertion Sort  —  Nama            ┃")
+	fmt.Println("  ┃                                           ┃")
+	fmt.Println("  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
 	fmt.Print("  Pilih menu: ")
 	inputString = bacaString()
 	pilih, valid = stringKeInt(inputString)
@@ -845,9 +838,9 @@ func menuSorting() {
 		insertionSortNama()
 	default:
 		fmt.Println()
-		fmt.Println("  ┌──────────────────────────────────────────┐")
+		fmt.Println("  ╭──────────────────────────────────────────╮")
 		fmt.Println("  │       !!! MENU TIDAK TERSEDIA !!!        │")
-		fmt.Println("  └──────────────────────────────────────────┘")
+		fmt.Println("  ╰──────────────────────────────────────────╯")
 	}
 }
 
@@ -866,10 +859,10 @@ func selectionSortID() {
 		daftarPeserta[min] = temp
 	}
 	fmt.Println()
-	fmt.Println("  ┌──────────────────────────────────────────┐")
-	fmt.Println("  │         DATA BERHASIL DIURUTKAN          │")
-	fmt.Println("  │        !!!   BERDASARKAN ID  !!!         │")
-	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Println("  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+	fmt.Println("  ┃         DATA BERHASIL DIURUTKAN          ┃")
+	fmt.Println("  ┃        !!!   BERDASARKAN ID  !!!         ┃")
+	fmt.Println("  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
 }
 
 func insertionSortNama() {
@@ -885,10 +878,10 @@ func insertionSortNama() {
 		daftarPeserta[j+1] = temp
 	}
 	fmt.Println()
-	fmt.Println("  ┌──────────────────────────────────────────┐")
-	fmt.Println("  │         DATA BERHASIL DIURUTKAN          │")
-	fmt.Println("  │       !!!   BERDASARKAN NAMA  !!!        │")
-	fmt.Println("  └──────────────────────────────────────────┘")
+	fmt.Println("  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
+	fmt.Println("  ┃         DATA BERHASIL DIURUTKAN          ┃")
+	fmt.Println("  ┃       !!!   BERDASARKAN NAMA  !!!        ┃")
+	fmt.Println("  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛")
 }
 
 func statistikPeserta() {
@@ -897,9 +890,9 @@ func statistikPeserta() {
 	var i int
 	if jumlahPeserta == 0 {
 		fmt.Println()
-		fmt.Println("  ┌──────────────────────────────────────────┐")
+		fmt.Println("  ╭──────────────────────────────────────────╮")
 		fmt.Println("  │      !!! BELUM ADA DATA PESERTA !!!      │")
-		fmt.Println("  └──────────────────────────────────────────┘")
+		fmt.Println("  ╰──────────────────────────────────────────╯")
 		return
 	}
 	idTerbesar = daftarPeserta[0].ID
@@ -982,7 +975,7 @@ func tampilSatuPeserta(i int) {
 		status = "Tidak"
 	}
 	fmt.Println()
-	fmt.Println("  ┌───────────────────────────────────────────────────────────┐")
+	fmt.Println("  ╭───────────────────────────────────────────────────────────╮")
 	fmt.Println("  │                    DETAIL PESERTA                         │")
 	fmt.Println("  ├──────────────────────────┬────────────────────────────────┤")
 	fmt.Printf("  │  ID Peserta              │ %-30d │\n", daftarPeserta[i].ID)
@@ -1002,7 +995,7 @@ func tampilSatuPeserta(i int) {
 	fmt.Printf("  │  Tanggal Daftar          │ %-30s │\n", daftarPeserta[i].TanggalDaftar)
 	fmt.Println("  ├──────────────────────────┼────────────────────────────────┤")
 	fmt.Printf("  │  Status                  │ %-30s │\n", status)
-	fmt.Println("  └──────────────────────────┴────────────────────────────────┘")
+	fmt.Println("  ╰───────────────────────────────────────────────────────────╯")
 }
 
 func clearScreen() {
