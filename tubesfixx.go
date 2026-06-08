@@ -1753,3 +1753,49 @@ func clearScreen() {
 	cmd.Stdout = os.Stdout
 	cmd.Run()
 }
+
+func isiDataDummy() {
+	//         Nama                Umur  Email                        NoHP              Minat       Kursus               H   B     T      Aktif
+	tambahDummy("Andi Pratama",      19, "andi@mail.com",             "081234567890",   "Sains",    "Python",            1,  5,  2024, true)
+	tambahDummy("Budi Santoso",      22, "budi@gmail.com",            "081387654321",   "Seni",     "Desain Grafis",     3,  5,  2024, true)
+	tambahDummy("Citra Dewi",        20, "citra@mail.com",            "085611223344",   "Prakarya", "Menjahit",          5,  5,  2023, false)
+	tambahDummy("Deni Kurnia",       18, "deni@yahoo.com",            "087833445566",   "Olahraga", "Renang",            7,  6,  2024, true)
+	tambahDummy("Eka Fitriani",      21, "eka@mail.com",              "081955667788",   "Sosial",   "Bahasa Inggris",   10,  6,  2024, true)
+	tambahDummy("Fajar Rizky",       23, "fajar@mail.com",            "082277889900",   "Sains",    "Golang",           12,  7,  2024, true)
+	tambahDummy("Gita Nurhaliza",    17, "gita@mail.com",             "083199001122",   "Seni",     "Musik",            14,  7,  2023, false)
+	tambahDummy("Hendra Wijaya",     25, "hendra@mail.com",           "084512341234",   "Olahraga", "Basket",           15,  8,  2024, true)
+	tambahDummy("Indah Permata",     19, "indah@mail.com",            "085623452345",   "Seni",     "Tari",              2,  8,  2023, true)
+	tambahDummy("Joko Susilo",       30, "joko@mail.com",             "086734563456",   "Prakarya", "Memasak",           9,  9,  2024, false)
+	tambahDummy("Kartini Sari",      27, "kartini@mail.com",          "087845674567",   "Sosial",   "Public Speaking",  11,  9,  2024, true)
+	tambahDummy("Lukman Hakim",      24, "lukman@mail.com",           "088956785678",   "Sains",    "Data Science",     20, 10,  2024, true)
+	tambahDummy("Maya Anggraini",    22, "maya@mail.com",             "081067896789",   "Seni",     "Melukis",          22, 10,  2023, true)
+	tambahDummy("Nanda Putra",       20, "nanda@mail.com",            "082178907890",   "Olahraga", "Futsal",           25, 11,  2024, false)
+	tambahDummy("Olivia Rahayu",     18, "olivia@mail.com",           "083289018901",   "Prakarya", "Keramik",          27, 11,  2023, true)
+}
+
+func tambahDummy(nama string, umur int, email, noHP, minat, kursus string, hari, bulan, tahun int, aktif bool) {
+	var p      Peserta
+	var idBaru int
+
+	if jumlahPeserta >= maxPeserta {
+		return
+	}
+
+	idBaru = generateID()
+	if idBaru == -1 {
+		return
+	}
+
+	p.ID            = idBaru
+	p.Nama          = nama
+	p.Umur          = umur
+	p.Email         = email
+	p.NoHP          = noHP
+	p.BidangMinat   = minat
+	p.Kursus = kursus
+	p.TanggalDaftar = fmt.Sprintf("%d-%d-%d", hari, bulan, tahun)
+	p.StatusAktif   = aktif
+
+	daftarPeserta[jumlahPeserta] = p
+	jumlahPeserta++
+}
