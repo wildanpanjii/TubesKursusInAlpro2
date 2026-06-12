@@ -1535,18 +1535,22 @@ func menuSortingNama() {
 }
 
 func selectionSortIDAscending() {
-	var min, j, i int
+	var idx, pass, i int
 	var temp Peserta
-	for i = 0; i < jumlahPeserta-1; i++ {
-		min = i
-		for j = i + 1; j < jumlahPeserta; j++ {
-			if daftarPeserta[j].ID < daftarPeserta[min].ID {
-				min = j
+	pass = 1
+	for pass <= jumlahPeserta-1 {
+		idx = pass - 1
+		i = pass
+		for i < jumlahPeserta {
+			if daftarPeserta[idx].ID > daftarPeserta[i].ID {
+				idx = i
 			}
+			i++
 		}
-		temp = daftarPeserta[i]
-		daftarPeserta[i] = daftarPeserta[min]
-		daftarPeserta[min] = temp
+		temp = daftarPeserta[pass-1]
+		daftarPeserta[pass-1] = daftarPeserta[idx]
+		daftarPeserta[idx] = temp
+		pass++
 	}
 	fmt.Println()
 	fmt.Println("  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
@@ -1560,18 +1564,22 @@ func selectionSortIDAscending() {
 }
 
 func selectionSortIDDescending() {
-	var min, j, i int
+	var idx, pass, i int
 	var temp Peserta
-	for i = 0; i < jumlahPeserta-1; i++ {
-		min = i
-		for j = i + 1; j < jumlahPeserta; j++ {
-			if daftarPeserta[j].ID > daftarPeserta[min].ID {
-				min = j
+	pass = 1
+	for pass <= jumlahPeserta-1 {
+		idx = pass - 1
+		i = pass
+		for i < jumlahPeserta {
+			if daftarPeserta[idx].ID < daftarPeserta[i].ID {
+				idx = i
 			}
+			i++
 		}
-		temp = daftarPeserta[i]
-		daftarPeserta[i] = daftarPeserta[min]
-		daftarPeserta[min] = temp
+		temp = daftarPeserta[pass-1]
+		daftarPeserta[pass-1] = daftarPeserta[idx]
+		daftarPeserta[idx] = temp
+		pass++
 	}
 	fmt.Println()
 	fmt.Println("  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
@@ -1586,15 +1594,17 @@ func selectionSortIDDescending() {
 
 func insertionSortNamaAscending() {
 	var temp Peserta
-	var j, i int
-	for i = 1; i < jumlahPeserta; i++ {
-		temp = daftarPeserta[i]
-		j = i - 1
-		for j >= 0 && daftarPeserta[j].Nama > temp.Nama {
-			daftarPeserta[j+1] = daftarPeserta[j]
-			j--
+	var pass, i int
+	pass = 1
+	for pass <= jumlahPeserta-1 {
+		i = pass
+		temp = daftarPeserta[pass]
+		for i > 0 && temp.Nama < daftarPeserta[i-1].Nama {
+			daftarPeserta[i] = daftarPeserta[i-1]
+			i--
 		}
-		daftarPeserta[j+1] = temp
+		daftarPeserta[i] = temp
+		pass++
 	}
 	fmt.Println()
 	fmt.Println("  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
@@ -1609,15 +1619,17 @@ func insertionSortNamaAscending() {
 
 func insertionSortNamaDescending() {
 	var temp Peserta
-	var j, i int
-	for i = 1; i < jumlahPeserta; i++ {
-		temp = daftarPeserta[i]
-		j = i - 1
-		for j >= 0 && daftarPeserta[j].Nama < temp.Nama {
-			daftarPeserta[j+1] = daftarPeserta[j]
-			j--
+	var pass, i int
+	pass = 1
+	for pass <= jumlahPeserta-1 {
+		i = pass
+		temp = daftarPeserta[pass]
+		for i > 0 && temp.Nama > daftarPeserta[i-1].Nama {
+			daftarPeserta[i] = daftarPeserta[i-1]
+			i--
 		}
-		daftarPeserta[j+1] = temp
+		daftarPeserta[i] = temp
+		pass++
 	}
 	fmt.Println()
 	fmt.Println("  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓")
